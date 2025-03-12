@@ -44,6 +44,11 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Generate resources
+```bash
+nest g resource users --no-spec
+```
+
 ## Run tests
 
 ```bash
