@@ -3,6 +3,7 @@ import { HydratedDocument } from 'mongoose';
 
 export type UserDocument = HydratedDocument<User>;
 
+// User là 1 class thuần của TypeScript để định nghĩa name, email,...
 @Schema({ timestamps: true })
 export class User {
   @Prop()
@@ -39,4 +40,6 @@ export class User {
   codeExpired: Date;
 }
 
+// UserSchema: Schema thực sự của MongoDB
+// Cho phép gọi các hàm find(), update(), delete()
 export const UserSchema = SchemaFactory.createForClass(User);

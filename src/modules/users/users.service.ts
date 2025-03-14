@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
+// @Injectable() giúp tạo 1 singleton
+// Tự nestjs sẽ tạo đối tượng, ta không cần phải làm như vầy: new UsersService()
+// Chỉ cần làm như vầy: private userService: UserService
 @Injectable()
 export class UsersService {
   create(createUserDto: CreateUserDto) {
