@@ -3,7 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
-import { Model } from 'mongoose';
+import { isValidObjectId, Model } from 'mongoose';
 import { hashPassword } from '@/helpers/password.helper';
 
 // @Injectable() giúp tạo 1 singleton
@@ -56,19 +56,22 @@ export class UsersService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOne(_id: string) {
+    return this.userModel.findOne({ _id }).select('-password');
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(_id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.userModel.updateOne({ _id }, updateUserDto);
+    if (user.matchedCount === 0) throw new BadRequestException(`User with _id ${_id} does not exist.`);
+
+    return updateUserDto;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  remove(_id: string) {
+    return this.userModel.deleteOne({ _id });
   }
 
-  async doesEmailExist(email: string) {
-    return await this.userModel.exists({ email });
+  doesEmailExist(email: string) {
+    return this.userModel.exists({ email });
   }
 }
