@@ -38,8 +38,22 @@ export class UsersService {
     return { _id: newUser._id };
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll(page: number = 1, limit: number = 10, sortBy: string = 'name', sortOrder: 'asc' | 'desc' = 'asc') {
+    const skip = (page - 1) * limit;
+    const sortDirection = sortOrder === 'asc' ? 1 : -1;
+
+    const users = await this.userModel.find().select('-password').skip(skip).limit(limit).sort({ [sortBy]: sortDirection }).exec();
+    const total = await this.userModel.countDocuments();
+
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      sortBy,
+      sortOrder,
+      data: users
+    };
   }
 
   findOne(id: number) {
