@@ -13,6 +13,7 @@ import { User, UserSchema } from './schemas/user.schema';
   imports: [MongooseModule.forFeature([{ name: User.name, schema: UserSchema }])], // User: class, UserSchema: schema của mongo(dùng để gọi hàm find(), update(), delete(), ...)
   controllers: [UsersController],
   providers: [UsersService],
+  exports: [UsersService], // Cần export UsersService để có thể inject vô Controller khác, còn với users.controller thì không cần
 })
 
 export class UsersModule {}

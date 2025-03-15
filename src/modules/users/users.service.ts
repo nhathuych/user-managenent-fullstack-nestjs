@@ -60,6 +60,10 @@ export class UsersService {
     return this.userModel.findOne({ _id }).select('-password');
   }
 
+  findOneBy(value: string) {
+    return this.userModel.findOne({ $or: [{ email: value }, { phone: value }] });
+  }
+
   async update(_id: string, updateUserDto: UpdateUserDto) {
     const user = await this.userModel.updateOne({ _id }, updateUserDto);
     if (user.matchedCount === 0) throw new BadRequestException(`User with _id ${_id} does not exist.`);
