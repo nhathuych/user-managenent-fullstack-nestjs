@@ -3,8 +3,11 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
-import { isValidObjectId, Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { hashPassword } from '@/helpers/password.helper';
+import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
+import { v4 as uuidv4 } from 'uuid';
+import * as dayjs from 'dayjs';
 
 // @Injectable() giúp tạo 1 singleton
 // Tự nestjs sẽ tạo đối tượng, ta không cần phải làm như vầy: new UsersService()
@@ -77,5 +80,26 @@ export class UsersService {
 
   doesEmailExist(email: string) {
     return this.userModel.exists({ email });
+  }
+
+  async handleRegister(createAuthDto: CreateAuthDto) {
+    const { name, email, password } = createAuthDto;
+
+    const user = await this.doesEmailExist(email);
+    if (user) throw new BadRequestException('Email has already been taken.');
+
+    const hashedPassword = await hashPassword(password);
+    const newUser = await this.userModel.create({
+      name,
+      email,
+      password: hashedPassword,
+      isActive: false,
+      codeId: uuidv4(),
+      codeExpired: dayjs().add(1, 'day')
+    });
+
+    // send email
+
+    return { _id: newUser._id };
   }
 }
