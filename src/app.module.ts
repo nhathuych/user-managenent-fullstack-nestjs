@@ -14,9 +14,11 @@ import { ReviewsModule } from '@/modules/reviews/reviews.module';
 import { AuthModule } from '@/auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
+    AuthModule,
     UsersModule,
     LikesModule,
     MenuItemOptionsModule,
@@ -33,7 +35,7 @@ import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
       }),
       inject: [ConfigService],
     }),
-    AuthModule
+    MailModule,
   ],
   controllers: [AppController],
   providers: [
