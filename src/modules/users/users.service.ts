@@ -8,13 +8,17 @@ import { hashPassword } from '@/helpers/password.helper';
 import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
 import { v4 as uuidv4 } from 'uuid';
 import * as dayjs from 'dayjs';
+import { MailService } from '@/mail/mail.service';
 
 // @Injectable() giúp tạo 1 singleton
 // Tự nestjs sẽ tạo đối tượng, ta không cần phải làm như vầy: new UsersService()
 // Chỉ cần làm như vầy: private userService: UserService
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private readonly mailService: MailService
+  ) {
     // @InjectModel(User.name): inject schema User vào trong Service để lấy schema User từ MongoDB
 
     // private userModel: chỉ dùng userModel trong class UsersService này
@@ -94,11 +98,11 @@ export class UsersService {
       email,
       password: hashedPassword,
       isActive: false,
-      codeId: uuidv4(),
+      activationCode: uuidv4(),
       codeExpired: dayjs().add(1, 'day')
     });
 
-    // send email
+    this.mailService.sendUserConfirmation(newUser)
 
     return { _id: newUser._id };
   }

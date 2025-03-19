@@ -3,14 +3,10 @@ import { LocalAuthGuard } from './passport/local-auth.guard';
 import { AuthService } from './auth.service';
 import { SkipAuth } from '@/decorators/skip-auth';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { MailService } from '@/mail/mail.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly mailService: MailService
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @SkipAuth()
   @UseGuards(LocalAuthGuard)
@@ -29,12 +25,5 @@ export class AuthController {
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
-  }
-
-  @SkipAuth()
-  @Get('send-mail')
-  sendMail() {
-    this.mailService.sendUserConfirmation();
-    return "sent"
   }
 }

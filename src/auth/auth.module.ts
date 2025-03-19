@@ -7,13 +7,11 @@ import { ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './passport/local.strategy';
 import { JwtStrategy } from './passport/jwt.strategy';
-import { MailModule } from '@/mail/mail.module';
 
 @Module({
   imports: [
     UsersModule,
     PassportModule,
-    MailModule,
 
     JwtModule.registerAsync({
       inject: [ConfigService],

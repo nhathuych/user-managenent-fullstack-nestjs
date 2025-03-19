@@ -34,7 +34,7 @@ export class User {
   isActive: boolean;
 
   @Prop()
-  codeId: string;
+  activationCode: string;
 
   @Prop()
   codeExpired: Date;

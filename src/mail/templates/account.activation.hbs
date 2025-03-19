@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Activate Your Account</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      text-align: center;
+      padding: 20px;
+    }
+    .container {
+      background-color: #ffffff;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      color: #333;
+    }
+    p {
+      color: #666;
+      font-size: 16px;
+    }
+    .code-box {
+      font-size: 20px;
+      font-weight: bold;
+      color: #fff;
+      background-color: #007bff;
+      padding: 10px;
+      display: inline-block;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Activate Your Account</h2>
+    <p>Hello <strong>{{name}}</strong>,</p>
+    <p>Thank you for signing up. Here is your activation code:</p>
+    <div class="code-box">{{activationCode}}</div>
+    <p>Please enter this code in our system to activate your account.</p>
+    <p>If you did not sign up, please ignore this email.</p>
+    <div class="footer">
+      <p>&copy; 2025 NestJS Company. All rights reserved.</p>
+      <p>Powered by NestJS 🚀</p>
+    </div>
+  </div>
+</body>
+</html>
