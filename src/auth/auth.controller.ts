@@ -3,6 +3,7 @@ import { LocalAuthGuard } from './passport/local-auth.guard';
 import { AuthService } from './auth.service';
 import { SkipAuth } from '@/decorators/skip-auth';
 import { CreateAuthDto } from './dto/create-auth.dto';
+import { ResponseMessage } from '@/decorators/response';
 
 @Controller('auth')
 export class AuthController {
@@ -10,6 +11,7 @@ export class AuthController {
 
   @SkipAuth()
   @UseGuards(LocalAuthGuard)
+  @ResponseMessage('Login successful')
   @Post('login') // /api/v1/auth/login
   async login(@Request() req) {
     return this.authService.login(req.user);
