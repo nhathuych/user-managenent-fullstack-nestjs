@@ -22,6 +22,14 @@ async function bootstrap() {
     transform: true, // Tự động convert kiểu dữ liệu
   }));
 
+  app.enableCors({
+    'origin': true,
+    'methods': "HEAD,GET,POST,PUT,PATCH,DELETE",
+    'preflightContinue': false,
+    'credentials': true
+  });
+
   await app.listen(port);
 }
+
 bootstrap();
