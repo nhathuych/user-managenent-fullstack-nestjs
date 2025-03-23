@@ -17,4 +17,16 @@ export class MailService {
       }
     });
   }
+
+  async sendResetPasswordEmail(user: User) {
+    await this.mailerService.sendMail({
+      to: user.email,
+      subject: 'Reset your password',
+      template: 'account.activation.hbs',
+      context: {
+        name: user.name ?? user.email,
+        activationCode: user.activationCode
+      }
+    });
+  }
 }

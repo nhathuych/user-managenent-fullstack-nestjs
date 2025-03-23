@@ -9,6 +9,8 @@ import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
 import { v4 as uuidv4 } from 'uuid';
 import * as dayjs from 'dayjs';
 import { MailService } from '@/mail/mail.service';
+import { VerifyAccountAuthDto } from '@/auth/dto/verify-account-auth.dto';
+import { UpdatePasswordDto } from '@/auth/dto/update-password.dto';
 
 // @Injectable() giúp tạo 1 singleton
 // Tự nestjs sẽ tạo đối tượng, ta không cần phải làm như vầy: new UsersService()
@@ -105,5 +107,68 @@ export class UsersService {
     this.mailService.sendUserConfirmation(newUser)
 
     return { _id: newUser._id };
+  }
+
+  async handleVerifyAccount(verifyAccountAuthDto: VerifyAccountAuthDto) {
+    const { _id, activationCode } = verifyAccountAuthDto;
+
+    const user = await this.userModel.findOne({ _id });
+    if (!user) throw new BadRequestException('User not found.');
+    if (!dayjs().isBefore(user.codeExpired)) throw new BadRequestException('Verification code has expired.');
+
+    const updatedUser = await this.userModel.findOneAndUpdate(
+      { _id, activationCode },
+      { isActive: true },
+      { new: true }
+    ).lean();
+
+    if (!updatedUser) throw new BadRequestException('Invalid verification code.');
+
+    return { isActive: updatedUser.isActive };
+  }
+
+  async resendVerifyEmail(email: string) {
+    const user = await this.userModel.findOne({ email });
+    if (!user) throw new BadRequestException('User not found.');
+    if (user.isActive) throw new BadRequestException('User has already been verified.');
+
+    const updatedUser = await this.userModel.findOneAndUpdate(
+      { email },
+      { activationCode: uuidv4(), codeExpired: dayjs().add(1, 'day') },
+      { new: true }
+    )
+    if (!updatedUser) throw new BadRequestException('Failed to send email.');
+    this.mailService.sendUserConfirmation(updatedUser);
+
+    return { _id: updatedUser._id };
+  }
+
+  async sendResetPasswordEmail(email: string) {
+    const user = await this.userModel.findOne({ email });
+    if (!user) throw new BadRequestException('User not found.');
+
+    const updatedUser = await this.userModel.findOneAndUpdate(
+      { email },
+      { activationCode: uuidv4(), codeExpired: dayjs().add(1, 'day') },
+      { new: true }
+    )
+    if (!updatedUser) throw new BadRequestException('Failed to send email.');
+    this.mailService.sendResetPasswordEmail(updatedUser);
+
+    return { email };
+  }
+
+  async updatePassword(updatePasswordDto: UpdatePasswordDto) {
+    const { email, password, activationCode } = updatePasswordDto;
+
+    const user = await this.userModel.findOne({ email, activationCode });
+    if (!user) throw new BadRequestException('No user found. Please verify your email and activation code.');
+    if (!dayjs().isBefore(user.codeExpired)) throw new BadRequestException('Verification code has expired.');
+
+    const hashedPassword = await hashPassword(password);
+    const res = await user.updateOne({ password: hashedPassword });
+    if (!res.acknowledged) throw new BadRequestException('Failed to update password.');
+
+    return res;
   }
 }
